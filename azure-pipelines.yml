@@ -30,12 +30,6 @@ steps:
     projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish'
 
-# Publish artifact (optional)
-- task: PublishBuildArtifacts@1
-  inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/publish'
-    artifactName: 'drop'
-
 # Deploy to Azure App Service
 - task: AzureWebApp@1
   inputs:
