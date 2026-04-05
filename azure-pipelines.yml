@@ -9,38 +9,49 @@ variables:
 
 steps:
 
-# Restore packages
+# -----------------------------
+# 1️⃣ Restore NuGet Packages
+# -----------------------------
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '**/*.sln'
 
-# Build project
+# -----------------------------
+# 2️⃣ Build Project
+# -----------------------------
 - task: VSBuild@1
   inputs:
     solution: '**/*.sln'
     platform: 'Any CPU'
     configuration: '$(buildConfiguration)'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=false /p:CopyAllFilesToSingleFolderForPackage=true'
 
-# Publish to folder
+# -----------------------------
+# 3️⃣ Publish to Folder
+# -----------------------------
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
     projects: '**/*.csproj'
-    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish'
+    arguments: '--configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish /p:CopyAllFilesToSingleFolderForPackage=true'
     zipAfterPublish: false   # Keep as folder, not zip
 
-# Optional: Publish artifacts for debugging
+# -----------------------------
+# 4️⃣ Optional: Publish Artifacts
+# -----------------------------
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)/publish'
     artifactName: 'drop'
 
-# Deploy to Azure App Service
+# -----------------------------
+# 5️⃣ Deploy to Azure App Service
+# -----------------------------
 - task: AzureWebApp@1
   inputs:
-    azureSubscription: 'azure-service-conn'
+    azureSubscription: 'azure-service-conn'      # Your service connection
     appName: 'dot-net-web-app--publish-with-code-cicd'
     package: '$(Build.ArtifactStagingDirectory)/publish'
     appType: 'webApp'
