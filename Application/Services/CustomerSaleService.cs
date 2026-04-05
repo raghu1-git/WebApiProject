@@ -20,7 +20,6 @@ namespace Application.Services
         public async Task<IEnumerable<CustomerSale>> GetAllCustomerSaleAsync()
         {
             var result = await _unitOfWork.CustomerSaleRepository.GetAllCustomerSaleAsync();
-            return result;
             
             //Get sales greater than 6000
             var mResult1 = result.Where(s => s.Amount > 6000).ToList();
@@ -283,6 +282,8 @@ namespace Application.Services
                                 p.Name
                             };
             var finalresult = leftJoin.Union(rightJoin);
+
+            return result;
         }
 
         public async Task AddCustomerSaleAsync(CustomerSale customerSale)
